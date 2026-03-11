@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libtinfo5 libncursesw5 libswt-gtk-4-jni \
     locales \
     # GUI stack (noVNC — browser-based, no XQuartz needed)
-    x11-apps x11vnc openbox xvfb dbus-x11 \
+    x11-apps x11-utils x11vnc openbox xvfb dbus-x11 \
     novnc python3-websockify \
     && rm -rf /var/lib/apt/lists/*
 
