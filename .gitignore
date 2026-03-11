@@ -1,0 +1,24 @@
+# Build outputs
+build/
+*.bit
+*.dcp
+*.log
+*.jou
+*.str
+.Xil/
+
+# Vivado installation (stored in ~/.vivado_at_mac/)
+Xilinx/
+.Xilinx/
+installer/
+
+# Credentials (never commit)
+secret.txt
+credentials.txt
+*.credentials
+
+# OS
+.DS_Store
+
+# Temporary
+*.tmp

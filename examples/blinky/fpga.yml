@@ -1,0 +1,11 @@
+project: blinky
+part: xc7a35tcpg236-1
+top: blinky
+
+sources:
+  - src/*.v
+
+constraints:
+  - constraints/basys3.xdc
+
+board: basys3
