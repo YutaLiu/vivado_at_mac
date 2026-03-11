@@ -68,6 +68,26 @@ This will:
 
 Installation takes 30-60 minutes depending on your machine.
 
+## Quick Start (Blinky Example)
+
+```bash
+# 1. Clone and install Vivado (one-time, ~40 min)
+git clone git@github.com:YutaLiu/vivado_at_mac.git
+cd vivado_at_mac
+./vam install ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2025.2_xxxx_Lin64.bin
+
+# 2. Build the blinky example (generates bitstream)
+./vam build ./examples/blinky/
+
+# 3. Program the FPGA (connect Basys3 via USB first)
+cd examples/blinky
+../../vam program
+
+# 4. Or open Vivado GUI in your browser
+../../vam gui
+# → opens http://localhost:6080 automatically
+```
+
 ## Usage
 
 ### Build Bitstream
@@ -142,7 +162,7 @@ Every FPGA project needs one `fpga.yml` file at its root:
 ```yaml
 # Project metadata
 project: blinky
-part: xc7a35ticsg324-1L
+part: xc7a35tcpg236-1
 top: blinky
 
 # Source files (glob patterns supported)
@@ -162,7 +182,7 @@ board: basys3
 
 | Board | Part |
 |---|---|
-| Basys3 | `xc7a35ticsg324-1L` |
+| Basys3 | `xc7a35tcpg236-1` |
 | Nexys A7-100T | `xc7a100tcsg324-1` |
 | Arty A7-35T | `xc7a35ticsg324-1L` |
 | Arty A7-100T | `xc7a100tcsg324-1` |
