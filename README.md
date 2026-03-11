@@ -95,6 +95,71 @@ cd vivado_at_mac
 > echo 'export PATH="$PATH:/path/to/vivado_at_mac"' >> ~/.zshrc
 > ```
 
+## Creating a New Project
+
+```bash
+# 1. Create project directory on Mac
+mkdir -p ~/my_fpga_project/src ~/my_fpga_project/constraints
+
+# 2. Create fpga.yml
+cat > ~/my_fpga_project/fpga.yml << 'EOF'
+project: my_project
+part: xc7a35tcpg236-1
+top: top
+sources:
+  - src/*.v
+constraints:
+  - constraints/board.xdc
+board: basys3
+EOF
+
+# 3. Write your Verilog and constraints
+vim ~/my_fpga_project/src/top.v
+vim ~/my_fpga_project/constraints/board.xdc
+
+# 4. Build bitstream
+vam build ~/my_fpga_project/
+
+# 5. Open Vivado GUI (optional)
+vam gui ~/my_fpga_project/
+```
+
+### Mac ↔ Container Path Mapping
+
+Your project directory is mounted into the container automatically:
+
+```
+Mac                                     Container
+────────────────────────────────────    ──────────────────
+~/my_fpga_project/                  →  /workspace/
+~/my_fpga_project/src/top.v         →  /workspace/src/top.v
+~/my_fpga_project/constraints/      →  /workspace/constraints/
+~/my_fpga_project/build/top.bit     ←  /workspace/build/top.bit
+```
+
+All files are shared in real-time (mount, not copy). Edit on Mac, build in
+container, results appear on Mac instantly.
+
+### GUI Mode with .xpr Project
+
+For Vivado GUI, you can optionally create a `.xpr` project file:
+
+```bash
+# Copy the template script to your project
+cp /path/to/vivado_at_mac/examples/blinky/create_project.tcl ~/my_fpga_project/
+# Edit project_name, part, top to match your fpga.yml
+
+# Generate .xpr (one-time)
+vam build  # or run create_project.tcl via docker run
+
+# Open GUI — .xpr loads automatically
+vam gui ~/my_fpga_project/
+```
+
+Without `.xpr`, `vam gui` opens a blank Vivado where you can manually open files
+from `/workspace/`. With `.xpr`, the project loads automatically with all sources
+and constraints ready.
+
 ## Usage
 
 ### Build Bitstream
