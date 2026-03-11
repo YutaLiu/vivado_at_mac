@@ -150,6 +150,27 @@ vam gui ./my_project/
 Opens `http://localhost:6080` in your default browser. Vivado runs inside the
 container with noVNC — no XQuartz or VNC client needed.
 
+If a `.xpr` project file exists in the project directory, Vivado will
+automatically open it. To create one from `fpga.yml`:
+
+```bash
+# Generate .xpr project (one-time)
+docker run --init --rm --platform linux/amd64 \
+  -v "$(pwd)/examples/blinky":/workspace \
+  -v ~/.vivado_at_mac/Xilinx:/opt/Xilinx:ro \
+  -v ~/.vivado_at_mac/.Xilinx:/home/user/.Xilinx \
+  vivado_at_mac:latest bash -c '
+    V_DIR=$(ls -d /opt/Xilinx/*/Vivado /opt/Xilinx/Vivado/* 2>/dev/null | head -n 1)
+    source "$V_DIR/settings64.sh"
+    vivado -mode batch -source /workspace/create_project.tcl -nolog -nojournal'
+
+# Then open GUI — project loads automatically
+vam gui ./examples/blinky/
+```
+
+**Workflow:** Edit `.v` files on Mac → Vivado GUI compiles in browser →
+bitstream appears on Mac at `build/`.
+
 When running in GUI mode with an FPGA board connected and `board:` set in
 `fpga.yml`, XVC bridge starts automatically so you can program directly from
 Vivado's Hardware Manager.
@@ -213,6 +234,7 @@ vivado_at_mac/
 ├── examples/
 │   └── blinky/                    # Example project
 │       ├── fpga.yml
+│       ├── create_project.tcl     # Generate .xpr for GUI mode
 │       ├── src/
 │       │   └── blinky.v
 │       └── constraints/

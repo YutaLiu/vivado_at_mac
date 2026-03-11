@@ -71,5 +71,14 @@ echo "  Open browser: http://localhost:6080"
 echo "========================================="
 echo ""
 
+# Auto-detect .xpr project file in /workspace
+XPR_FILE=$(find /workspace -maxdepth 1 -name "*.xpr" 2>/dev/null | head -n 1)
+
 # Launch Vivado GUI (foreground — container exits when Vivado closes)
-$V_DIR/bin/vivado -nolog -nojournal
+if [ -n "$XPR_FILE" ]; then
+    echo "  Opening project: $XPR_FILE"
+    echo ""
+    $V_DIR/bin/vivado "$XPR_FILE" -nolog -nojournal
+else
+    $V_DIR/bin/vivado -nolog -nojournal
+fi
