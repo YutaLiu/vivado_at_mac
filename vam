@@ -111,6 +111,15 @@ EXAMPLE
     fi
 }
 
+#=== Validation ===#
+validate_identifier() {
+    local val="$1" name="$2"
+    if [[ ! "$val" =~ ^[a-zA-Z0-9_\-]+$ ]]; then
+        error "$name contains invalid characters: $val"
+        exit 1
+    fi
+}
+
 #=== TCL Build Script Generation ===#
 generate_build_tcl() {
     local fpga_yml="$1"
@@ -125,6 +134,9 @@ generate_build_tcl() {
         error "fpga.yml must have 'part' and 'top' fields."
         exit 1
     fi
+
+    validate_identifier "$part" "part"
+    validate_identifier "$top" "top"
 
     mkdir -p "$build_dir"
     local tcl_file="$build_dir/build.tcl"
@@ -278,6 +290,7 @@ cmd_build() {
     step "Starting Vivado build (batch mode)..."
     echo ""
 
+    local exit_code=0
     docker run --init --rm \
         --name "$VAM_CONTAINER_BUILD" \
         --platform linux/amd64 \
@@ -293,9 +306,8 @@ cmd_build() {
             fi
             source "$V_DIR/settings64.sh"
             vivado -mode batch -source /workspace/build/build.tcl -nolog -nojournal
-        '
+        ' || exit_code=$?
 
-    local exit_code=$?
     echo ""
 
     if [ $exit_code -eq 0 ] && [ -f "$project_dir/build/${top}.bit" ]; then
@@ -396,16 +408,20 @@ cmd_gui() {
         fi
     fi
 
-    # Cleanup on exit
+    # Cleanup on exit (with double-execution guard)
+    _GUI_CLEANUP_DONE=0
     cleanup_gui() {
+        [ "$_GUI_CLEANUP_DONE" -eq 1 ] && return
+        _GUI_CLEANUP_DONE=1
         echo ""
         info "Stopping GUI session..."
         docker kill "$VAM_CONTAINER_GUI" &>/dev/null || true
-        [ -n "$xvc_pid" ] && kill "$xvc_pid" &>/dev/null || true
+        if [ -n "$xvc_pid" ] && kill -0 "$xvc_pid" 2>/dev/null; then
+            kill "$xvc_pid" 2>/dev/null || true
+        fi
         success "GUI session ended."
-        exit 0
     }
-    trap cleanup_gui INT TERM
+    trap cleanup_gui INT TERM EXIT
 
     step "Starting Vivado GUI (noVNC on port $NOVNC_PORT)..."
 
@@ -433,6 +449,7 @@ cmd_gui() {
 
     wait $container_pid 2>/dev/null || true
     cleanup_gui
+    trap - INT TERM EXIT
 }
 
 cmd_status() {
@@ -487,6 +504,7 @@ cmd_status() {
 
 cmd_clean() {
     local project_dir="${1:-.}"
+    project_dir="$(cd "$project_dir" && pwd)"
 
     if [ -d "$project_dir/build" ]; then
         rm -rf "$project_dir/build"

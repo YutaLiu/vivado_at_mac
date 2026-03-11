@@ -10,7 +10,7 @@ set username [lindex $secret 0]
 set password [lindex $secret 1]
 close $fd
 
-set timeout -1
+set timeout 120
 
 spawn "$executable" -b AuthTokenGen
 expect {

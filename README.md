@@ -41,8 +41,9 @@ Mac (Apple Silicon)
    brew install --cask orbstack
    ```
 
-3. **openFPGALoader dependencies** (for FPGA programming)
+3. **openFPGALoader** (for FPGA programming)
    ```bash
+   brew install openfpgaloader
    brew install libusb libftdi hidapi
    ```
 
@@ -62,9 +63,11 @@ cd vivado_at_mac
 
 This will:
 1. Check prerequisites (OrbStack, dependencies)
-2. Pull the base Docker image
+2. Build the Docker image from the included Dockerfile
 3. Install Vivado 2025.2 to `~/.vivado_at_mac/Xilinx/` (~40GB)
 4. Verify installation
+
+> **Note:** Requires a free [AMD/Xilinx account](https://www.xilinx.com/registration/create-account.html). You will be prompted to log in during installation.
 
 Installation takes 30-60 minutes depending on your machine.
 
@@ -80,13 +83,17 @@ cd vivado_at_mac
 ./vam build ./examples/blinky/
 
 # 3. Program the FPGA (connect Basys3 via USB first)
-cd examples/blinky
-../../vam program
+./vam program ./examples/blinky/
 
 # 4. Or open Vivado GUI in your browser
-../../vam gui
+./vam gui ./examples/blinky/
 # → opens http://localhost:6080 automatically
 ```
+
+> **Tip:** Add `vam` to your PATH for easier access:
+> ```bash
+> echo 'export PATH="$PATH:/path/to/vivado_at_mac"' >> ~/.zshrc
+> ```
 
 ## Usage
 
@@ -113,7 +120,8 @@ my_project/
     ├── post_synth.dcp        ← synthesis checkpoint
     ├── post_route.dcp        ← route checkpoint
     ├── utilization.rpt       ← resource usage report
-    └── timing.rpt            ← timing analysis report
+    ├── timing.rpt            ← timing analysis report
+    └── power.rpt             ← power analysis report
 ```
 
 ### Program FPGA
@@ -142,8 +150,9 @@ vam gui ./my_project/
 Opens `http://localhost:6080` in your default browser. Vivado runs inside the
 container with noVNC — no XQuartz or VNC client needed.
 
-When running in GUI mode with an FPGA board connected, XVC bridge starts
-automatically so you can program directly from Vivado's Hardware Manager.
+When running in GUI mode with an FPGA board connected and `board:` set in
+`fpga.yml`, XVC bridge starts automatically so you can program directly from
+Vivado's Hardware Manager.
 
 Press `Ctrl+C` to stop the GUI session.
 
@@ -271,11 +280,8 @@ OrbStack > Settings > check "Use Rosetta"
 ## Uninstall
 
 ```bash
-# Remove Vivado installation (~40GB)
+# Remove Vivado installation (~40GB) and Docker image
 vam uninstall
-
-# Remove Docker image
-docker rmi vivado_at_mac:latest
 
 # Remove this repo
 rm -rf vivado_at_mac/

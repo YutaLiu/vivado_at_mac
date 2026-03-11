@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 ###############################################################################
 # install-vivado.sh — Runs inside the container to install Vivado
@@ -74,7 +74,9 @@ if ! $GENERATED_TOKEN; then
     read -rs password
     echo ""
 
-    CRED_FILE="/tmp/.vam_credentials"
+    CRED_FILE=$(mktemp /tmp/.vam_credentials.XXXXXX)
+    chmod 600 "$CRED_FILE"
+    trap 'rm -f "$CRED_FILE"' EXIT
     echo "$email" > "$CRED_FILE"
     echo "$password" >> "$CRED_FILE"
 
@@ -90,6 +92,7 @@ if ! $GENERATED_TOKEN; then
     fi
 
     rm -f "$CRED_FILE"
+    trap - EXIT
 fi
 
 if ! $GENERATED_TOKEN; then

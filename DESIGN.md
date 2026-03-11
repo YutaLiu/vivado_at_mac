@@ -161,7 +161,7 @@ Non-project mode is used because:
 Runs inside container when `vam gui` is called:
 
 ```
-1. Start Xvfb :1 -screen 0 1920x1080x24
+1. Start Xvfb :1 -screen 0 1600x900x24
 2. Start openbox (window manager)
 3. Start x11vnc -display :1 -nopw -forever
 4. Start websockify --web /usr/share/novnc/ 6080 localhost:5900
@@ -177,7 +177,6 @@ Installed on Mac host (not in container):
 
 ```bash
 brew install openfpgaloader
-# or use bundled binary with XVC support
 ```
 
 Two modes:

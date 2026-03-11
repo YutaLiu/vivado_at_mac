@@ -20,5 +20,8 @@ credentials.txt
 # OS
 .DS_Store
 
+# Vivado runtime artifacts
+clockInfo.txt
+
 # Temporary
 *.tmp

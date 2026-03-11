@@ -3,7 +3,7 @@ module blinky (
     output reg [15:0] led
 );
 
-    reg [24:0] counter = 0;
+    reg [25:0] counter = 0;
 
     always @(posedge clk) begin
         counter <= counter + 1;

@@ -27,7 +27,6 @@ ENV LC_ALL=en_US.UTF-8
 
 # Non-root user with sudo
 RUN useradd -m -s /bin/bash -G sudo user && \
-    echo "user:password" | chpasswd && \
     echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER user
