@@ -1,0 +1,4 @@
+project: veer-eh2
+part: xc7a200tffg1156-1
+top: eh2_veer_wrapper
+board: nexys_a7_100t
